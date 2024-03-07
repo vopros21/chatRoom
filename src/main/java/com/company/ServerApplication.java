@@ -9,32 +9,53 @@ import java.net.Socket;
 
 public class ServerApplication {
     private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
 
-    public void start(int port) throws IOException {
-        serverSocket = new ServerSocket(port);
-        clientSocket = serverSocket.accept();
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            if (".".equals(inputLine)) {
-                out.println("Tchao!");
-                break;
+    public static void main(String[] args) {
+        ServerApplication server = new ServerApplication();
+        server.start(5555);
+    }
+
+    public void start(int port) {
+        try {
+            serverSocket = new ServerSocket(port);
+            while (true) {
+                new ClientHandler(serverSocket.accept()).start();
             }
-            out.println(inputLine);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
-    public void stop() throws IOException {
-        in.close();
-        out.close();
-        clientSocket.close();
-        serverSocket.close();
+
+    public void stop() {
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-    public static void main(String[] args) throws IOException {
-        ServerApplication server = new ServerApplication();
-        server.start(4321);
+
+    private static class ClientHandler extends Thread {
+        private Socket clientSocket;
+
+        public ClientHandler(Socket socket) {
+            clientSocket = socket;
+        }
+
+        public void run() {
+            try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    if (".".equals(inputLine)) {
+                        out.println("Tchao!");
+                        break;
+                    }
+                    out.println(inputLine);
+                }
+                clientSocket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
