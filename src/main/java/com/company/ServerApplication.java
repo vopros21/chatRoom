@@ -1,11 +1,12 @@
 package com.company;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class ServerApplication {
     private ServerSocket serverSocket;
@@ -43,14 +44,41 @@ public class ServerApplication {
 
         public void run() {
             try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-                String inputLine;
-                while ((inputLine = in.readLine()) != null) {
-                    if (".".equals(inputLine)) {
-                        out.println("Tchao!");
-                        break;
+                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
+                char dataType = in.readChar();
+                while (dataType != 0) {
+                    int length = in.readInt();
+                    if (dataType == 's') {
+                        byte[] messageByte = new byte[length];
+                        boolean end = false;
+                        StringBuilder dataString = new StringBuilder(length);
+                        int totalBytesRead = 0;
+                        while (!end) {
+                            int currentsBytesRead = in.read(messageByte);
+                            totalBytesRead += currentsBytesRead;
+                            if (totalBytesRead <= length) {
+                                dataString.
+                                        append(new String(messageByte, 0, currentsBytesRead, StandardCharsets.UTF_8));
+                            } else {
+                                dataString.
+                                        append(new String(messageByte, 0,
+                                                length - totalBytesRead + currentsBytesRead, StandardCharsets.UTF_8));
+                            }
+                            if (dataString.length() >= length) {
+                                end = true;
+                            }
+                        }
+                        if (".".contentEquals(dataString)) {
+                            out.println("Tchao!");
+                            break;
+                        }
+                        out.println(dataString);
                     }
-                    out.println(inputLine);
+                    try {
+                        dataType = in.readChar();
+                    } catch (Exception e) {
+                        dataType = 0;
+                    }
                 }
                 clientSocket.close();
             } catch (IOException e) {
