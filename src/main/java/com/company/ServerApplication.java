@@ -1,5 +1,8 @@
 package com.company;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -9,6 +12,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
 public class ServerApplication {
+    private static final Logger log = LoggerFactory.getLogger(ServerApplication.class);
     private ServerSocket serverSocket;
 
     public static void main(String[] args) {
@@ -17,6 +21,7 @@ public class ServerApplication {
     }
 
     public void start(int port) {
+        log.info("Starting app with opened port: " + port);
         try {
             serverSocket = new ServerSocket(port);
             while (true) {
@@ -39,6 +44,7 @@ public class ServerApplication {
         private final Socket clientSocket;
 
         public ClientHandler(Socket socket) {
+            log.info("Creating ClientHandler: " + this);
             clientSocket = socket;
         }
 
