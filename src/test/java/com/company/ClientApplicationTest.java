@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Mike Kostenko on 01/03/2024
  */
-public class ServerApplicationTest {
+public class ClientApplicationTest {
 
     @Test
     public void givenClient1_whenServerResponds_thenCorrect() {

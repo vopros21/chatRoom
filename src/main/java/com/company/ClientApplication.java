@@ -1,9 +1,6 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 
@@ -44,5 +41,19 @@ public class ClientApplication {
         in.close();
         out.close();
         clientSocket.close();
+    }
+
+    public static void main(String[] args) {
+        ClientApplication client = new ClientApplication();
+        client.startConnection("localhost", 5555);
+        Console console = System.console();
+        while (true) {
+            String msg = console.readLine();
+            String answer = client.sendStringMessage(msg);
+            System.out.println("Server: " + answer);
+            if ("Tchao!".equals(answer)) {
+                break;
+            }
+        }
     }
 }

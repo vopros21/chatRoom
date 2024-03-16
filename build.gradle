@@ -10,7 +10,7 @@ plugins {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.company.ServerApplication'
+        attributes 'Main-Class': 'com.company.ClientApplication'
     }
 }
 

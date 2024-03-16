@@ -36,7 +36,7 @@ public class ServerApplication {
     }
 
     private static class ClientHandler extends Thread {
-        private Socket clientSocket;
+        private final Socket clientSocket;
 
         public ClientHandler(Socket socket) {
             clientSocket = socket;
@@ -47,32 +47,13 @@ public class ServerApplication {
                  DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
                 char dataType = in.readChar();
                 while (dataType != 0) {
-                    int length = in.readInt();
                     if (dataType == 's') {
-                        byte[] messageByte = new byte[length];
-                        boolean end = false;
-                        StringBuilder dataString = new StringBuilder(length);
-                        int totalBytesRead = 0;
-                        while (!end) {
-                            int currentsBytesRead = in.read(messageByte);
-                            totalBytesRead += currentsBytesRead;
-                            if (totalBytesRead <= length) {
-                                dataString.
-                                        append(new String(messageByte, 0, currentsBytesRead, StandardCharsets.UTF_8));
-                            } else {
-                                dataString.
-                                        append(new String(messageByte, 0,
-                                                length - totalBytesRead + currentsBytesRead, StandardCharsets.UTF_8));
-                            }
-                            if (dataString.length() >= length) {
-                                end = true;
-                            }
-                        }
-                        if (".".contentEquals(dataString)) {
+                        String input = readString(in);
+                        if (".".equals(input)) {
                             out.println("Tchao!");
                             break;
                         }
-                        out.println(dataString);
+                        out.println(input);
                     }
                     try {
                         dataType = in.readChar();
@@ -84,6 +65,30 @@ public class ServerApplication {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        private String readString(DataInputStream in) throws IOException {
+            int length = in.readInt();
+            byte[] messageByte = new byte[length];
+            boolean end = false;
+            StringBuilder dataString = new StringBuilder(length);
+            int totalBytesRead = 0;
+            while (!end) {
+                int currentsBytesRead = in.read(messageByte);
+                totalBytesRead += currentsBytesRead;
+                if (totalBytesRead <= length) {
+                    dataString.
+                            append(new String(messageByte, 0, currentsBytesRead, StandardCharsets.UTF_8));
+                } else {
+                    dataString.
+                            append(new String(messageByte, 0,
+                                    length - totalBytesRead + currentsBytesRead, StandardCharsets.UTF_8));
+                }
+                if (dataString.length() >= length) {
+                    end = true;
+                }
+            }
+            return dataString.toString();
         }
     }
 }
