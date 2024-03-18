@@ -10,10 +10,14 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ServerApplication {
     private static final Logger log = LoggerFactory.getLogger(ServerApplication.class);
     private ServerSocket serverSocket;
+    private boolean stop;
+    private Set<ClientHandler> clients = new HashSet<>();
 
     public static void main(String[] args) {
         ServerApplication server = new ServerApplication();
@@ -24,11 +28,21 @@ public class ServerApplication {
         log.info("Starting app with opened port: " + port);
         try {
             serverSocket = new ServerSocket(port);
-            while (true) {
-                new ClientHandler(serverSocket.accept()).start();
+            while (!stop) {
+                ClientHandler client = new ClientHandler(serverSocket.accept());
+                clients.add(client);
+                client.start();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    void broadcast(String message, ClientHandler excludeClient) {
+        for (ClientHandler current : clients) {
+            if (current != excludeClient) {
+                current.sendMessage(message);
+            }
         }
     }
 
@@ -42,6 +56,7 @@ public class ServerApplication {
 
     private static class ClientHandler extends Thread {
         private final Socket clientSocket;
+        private PrintWriter writer;
 
         public ClientHandler(Socket socket) {
             log.info("Creating ClientHandler: " + this);
@@ -49,17 +64,17 @@ public class ServerApplication {
         }
 
         public void run() {
-            try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
+            try (DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
+                writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 char dataType = in.readChar();
                 while (dataType != 0) {
                     if (dataType == 's') {
                         String input = readString(in);
                         if (".".equals(input)) {
-                            out.println("Tchao!");
+                            writer.println("Tchao!");
                             break;
                         }
-                        out.println(input);
+                        writer.println(input);
                     }
                     try {
                         dataType = in.readChar();
@@ -95,6 +110,10 @@ public class ServerApplication {
                 }
             }
             return dataString.toString();
+        }
+
+        void sendMessage(String msg) {
+            writer.println(msg);
         }
     }
 }
