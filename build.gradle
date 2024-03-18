@@ -27,27 +27,21 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    springVersion = 'latest.release'
-    lombokVersion = '1.18.30'
-    junitVersion = '5.8.1'
-}
-
 dependencies {
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
-    compileOnly 'org.projectlombok:lombok:$lombokVersion'
-    annotationProcessor 'org.projectlombok:lombok:$lombokVersion'
+    compileOnly 'org.projectlombok:lombok:latest.release'
+    annotationProcessor 'org.projectlombok:lombok:latest.release'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
-    implementation 'org.springframework.boot:spring-boot-starter:$springVersion'
+    implementation 'org.springframework.boot:spring-boot-starter:latest.release'
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:$springVersion'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:latest.release'
 
-    implementation 'org.springframework.boot:spring-boot-starter-web:$springVersion'
-    implementation 'org.springframework.boot:spring-boot-starter-log4j2:$springVersion'
+    implementation 'org.springframework.boot:spring-boot-starter-web:latest.release'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2:latest.release'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:$junitVersion'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:$junitVersion'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:latest.release'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:latest.release'
 }
 
 test {
