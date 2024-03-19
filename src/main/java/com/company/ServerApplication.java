@@ -17,7 +17,7 @@ public class ServerApplication {
     private static final Logger log = LoggerFactory.getLogger(ServerApplication.class);
     private ServerSocket serverSocket;
     private boolean stop;
-    private Set<ClientHandler> clients = new HashSet<>();
+    private final Set<ClientHandler> clients = new HashSet<>();
 
     public static void main(String[] args) {
         ServerApplication server = new ServerApplication();
@@ -29,7 +29,7 @@ public class ServerApplication {
         try {
             serverSocket = new ServerSocket(port);
             while (!stop) {
-                ClientHandler client = new ClientHandler(serverSocket.accept());
+                ClientHandler client = new ClientHandler(serverSocket.accept(), this);
                 clients.add(client);
                 client.start();
             }
@@ -40,9 +40,10 @@ public class ServerApplication {
 
     void broadcast(String message, ClientHandler excludeClient) {
         for (ClientHandler current : clients) {
-            if (current != excludeClient) {
-                current.sendMessage(message);
-            }
+            current.sendMessage(message);
+//            if (current != excludeClient) {
+//                current.sendMessage(message);
+//            }
         }
     }
 
@@ -57,10 +58,12 @@ public class ServerApplication {
     private static class ClientHandler extends Thread {
         private final Socket clientSocket;
         private PrintWriter writer;
+        private final ServerApplication server;
 
-        public ClientHandler(Socket socket) {
+        public ClientHandler(Socket socket, ServerApplication server) {
             log.info("Creating ClientHandler: " + this);
             clientSocket = socket;
+            this.server = server;
         }
 
         public void run() {
@@ -69,12 +72,12 @@ public class ServerApplication {
                 char dataType = in.readChar();
                 while (dataType != 0) {
                     if (dataType == 's') {
-                        String input = readString(in);
-                        if (".".equals(input)) {
+                        String userMsg = readString(in);
+                        if (".".equals(userMsg)) {
                             writer.println("Tchao!");
                             break;
                         }
-                        writer.println(input);
+                        server.broadcast(userMsg, this);
                     }
                     try {
                         dataType = in.readChar();
