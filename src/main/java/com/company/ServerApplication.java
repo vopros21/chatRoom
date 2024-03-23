@@ -71,4 +71,12 @@ public class ServerApplication {
     public boolean hasUsers() {
         return !this.userNames.isEmpty();
     }
+
+    public void removeUser(String userName, ClientHandler client) {
+        boolean removed = userNames.remove(userName);
+        if (removed) {
+            clients.remove(client);
+            log.info("The user " + userName + " quit");
+        }
+    }
 }

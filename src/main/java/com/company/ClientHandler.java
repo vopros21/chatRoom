@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author Mike Kostenko on 23/03/2024
  */
-class ClientHandler extends Thread {
+public class ClientHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
     private final Socket clientSocket;
     private final ServerApplication server;
@@ -39,7 +39,9 @@ class ClientHandler extends Thread {
             server.addUserName(userName);
 
             char dataType = in.readChar();
-            while (dataType != 0) {
+            while (clientSocket.isConnected() && !clientSocket.isClosed()) {
+                if (dataType == 0)
+                    break;
                 if (dataType == 's') {
                     String userMsg = readString(in);
                     if (".".equals(userMsg)) {
@@ -54,9 +56,17 @@ class ClientHandler extends Thread {
                     dataType = 0;
                 }
             }
-            clientSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } finally {
+            server.removeUser(userName, this);
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                log.error(e.toString());
+            }
+            String serverMessage = userName + " has quit.";
+            server.broadcast(serverMessage, this);
         }
     }
 
