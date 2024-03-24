@@ -33,8 +33,6 @@ public class ClientHandler extends Thread {
         try (DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()))) {
             writer = new PrintWriter(clientSocket.getOutputStream(), true);
 
-            printUsers();
-
             // add username to the list of online users
             server.addUserName(userName);
 
@@ -96,13 +94,5 @@ public class ClientHandler extends Thread {
 
     void sendMessage(String msg) {
         writer.println(msg);
-    }
-
-    void printUsers() {
-        if (server.hasUsers()) {
-            writer.println("No other users connected");
-        } else {
-            writer.println("Connected users: " + server.getUserNames());
-        }
     }
 }
