@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * Seperate thread for writing the message
+ * Separate thread for writing the message
  */
 public class WriteThread extends Thread {
     private final Socket socket;
@@ -23,7 +23,6 @@ public class WriteThread extends Thread {
             writer = new PrintWriter(output, true);
         } catch (IOException ex) {
             System.out.println("Error getting output stream: " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
 
@@ -37,7 +36,6 @@ public class WriteThread extends Thread {
         writer.println(userName);
 
         String text;
-
         while (!socket.isOutputShutdown()) {
             // Send message to socket's output stream
             text = console.readLine(":");
@@ -48,7 +46,6 @@ public class WriteThread extends Thread {
             socket.close();
             writer.close();
         } catch (IOException ex) {
-
             System.out.println("Error writing to server: " + ex.getMessage());
         }
     }

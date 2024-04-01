@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
- * Seperate thread for reading and displaying the message
+ * Separate thread for reading and displaying the message
  */
 public class ReadThread extends Thread {
     private final Socket socket;
@@ -23,7 +23,6 @@ public class ReadThread extends Thread {
             this.reader = new BufferedReader(new InputStreamReader(input));
         } catch (IOException ex) {
             System.out.println("Error getting input stream: " + ex.getMessage());
-            ex.printStackTrace();
         }
     }
 
@@ -39,8 +38,7 @@ public class ReadThread extends Thread {
                     System.out.print("->(" + client.getUserName() + "): ");
                 }
             } catch (IOException ex) {
-                System.out.println("Error in reading" + ex.getMessage());
-                ex.printStackTrace();
+                System.err.println("Error in reading" + ex.getMessage());
                 break;
             }
         }

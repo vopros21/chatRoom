@@ -21,14 +21,6 @@ public class Client {
     private String userName;
 
     /**
-     * Default Constructor
-     */
-    public Client() {
-        this.hostname = "localhost";
-        this.port = 3000;
-    }
-
-    /**
      * Parametrized Constructor
      *
      * @param hostname: hostname of the server
@@ -44,10 +36,15 @@ public class Client {
         Console console = System.console();
 
         String hostname = console.readLine("\nEnter hostname:");
+        if (hostname.isEmpty()) {
+            hostname = "localhost";
+        }
         int port = Integer.parseInt(console.readLine("\nEnter port:"));
+        if (port == 0) {
+            port = 3000;
+        }
 
         Client client = new Client(hostname, port);
-
         client.init();
     }
 
@@ -58,20 +55,19 @@ public class Client {
         try {
             // gives the IP address of the host
             InetAddress address = InetAddress.getByName(hostname);
-            // socket constructor of type (InetAdress, portnumber)
+            // socket constructor of type (InetAddress, port number)
             Socket socket = new Socket(address, port);
 
             System.out.println("Connected to the chat server");
 
-            // separate threads for reading and writing msgs
+            // separate threads for reading and writing messages
             new ReadThread(socket, this).start();
             new WriteThread(socket, this).start();
 
         } catch (UnknownHostException ex) {
-            System.out.println("Server not found: " + ex.getMessage());
+            System.err.println("Server not found: " + ex.getMessage());
         } catch (IOException ex) {
-            System.out.println("I/O Error: " + ex.getMessage());
+            System.err.println("I/O Error: " + ex.getMessage());
         }
-
     }
 }
