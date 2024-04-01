@@ -1,5 +1,8 @@
 package com.company;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,10 +15,11 @@ import java.net.Socket;
  * @author Mike Kostenko on 31/03/2024
  */
 public class UserThread extends Thread {
+    private static final Logger log = LoggerFactory.getLogger(Server.class);
     // User Socket
-    private Socket socket;
+    private final Socket socket;
     // Main Server
-    private Server server;
+    private final Server server;
     private PrintWriter writer;
     private String userName;
 
@@ -39,7 +43,7 @@ public class UserThread extends Thread {
         try (
                 // autocloseable
                 // used to read from socket's InputStream, data is fed using WriteThread.java
-                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
             // write to socket's output stream
             this.writer = new PrintWriter(socket.getOutputStream(), true);
 
@@ -50,14 +54,15 @@ public class UserThread extends Thread {
             this.userName = reader.readLine();
             server.addUserName(userName);
 
-            // message send by server to all user, exept current one
+            // message send by server to all user, except current one
             String serverMessage = "New user connected: " + userName;
+            log.info(serverMessage);
             server.broadcast(serverMessage, this);
 
             // client messages
             String clientMessage;
 
-            // rest msgs send by current client
+            // read messages send by current client
             while (socket.isConnected() && !socket.isClosed()) {
                 clientMessage = reader.readLine();
                 serverMessage = "["
@@ -66,24 +71,22 @@ public class UserThread extends Thread {
                         + UserNamePainter.getPOSTFIX()
                         + "]: " + clientMessage;
                 server.broadcast(serverMessage, this);
+                log.info("Broadcast message: " + userName + " -> " + clientMessage);
             }
 
         } catch (IOException ex) {
-            System.out.println("Error in UserThread: " + ex.getMessage());
-            ex.printStackTrace();
-
+            log.error("Error in UserThread: " + ex.getMessage());
+            log.error(ex.toString());
         } finally {
-
             server.removeUser(userName, this);
 
             try {
                 socket.close();
-
             } catch (IOException e) {
-                System.out.println(e);
+                log.error("Error in closing socket: " + e.getMessage());
             }
-
             String serverMessage = userName + " has quit.";
+            log.info(serverMessage);
             server.broadcast(serverMessage, this);
         }
     }

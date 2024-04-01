@@ -1,18 +1,20 @@
 package com.company;
 
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
 
 /**
  * Main class for running the server
  */
 public class Server {
+    private static final Logger log = LoggerFactory.getLogger(Server.class);
     // stop the server
     public boolean stop;
     /**
@@ -25,15 +27,7 @@ public class Server {
     @Getter
     private Set<String> userNames = new HashSet<>();
     // stores user objects
-    private Set<UserThread> userThreads = new HashSet<>();
-
-    /**
-     * Default constructor
-     */
-    public Server() {
-        this.port = 3000;
-        this.stop = false;
-    }
+    private final Set<UserThread> userThreads = new HashSet<>();
 
     /**
      * Parametrized Constructor
@@ -51,14 +45,9 @@ public class Server {
      * @param args: command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Enter Port Number:");
-        Scanner sc = new Scanner(System.in);
-        int port = sc.nextInt();
-        Server server = new Server(port);
+        Server server = new Server(3000);
         System.out.println("Connected to port->" + server.getPort());
-
         server.init();
-        sc.close();
     }
 
     /**
@@ -77,7 +66,7 @@ public class Server {
                 System.out.println(clientSocket.getInetAddress());
                 System.out.println("-----------------------");
 
-                // sperate thread for each client
+                // separate thread for each client
                 UserThread newUser = new UserThread(clientSocket, this);
                 // add user to the list
                 userThreads.add(newUser);
@@ -86,9 +75,8 @@ public class Server {
             }
 
         } catch (IOException e) {
-            System.out.println("Port already in use");
-
-            System.out.println(e);
+            log.warn("Port already in use");
+            log.error(e.toString());
         }
     }
 
