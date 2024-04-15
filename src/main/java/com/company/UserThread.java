@@ -71,11 +71,11 @@ public class UserThread extends Thread {
                         + UserNamePainter.getPOSTFIX()
                         + "]: " + clientMessage;
                 server.broadcast(serverMessage, this);
-                log.info("Broadcast message: " + userName + " -> " + clientMessage);
+                log.info("Broadcast message: {} -> {}", userName, clientMessage);
             }
 
         } catch (IOException ex) {
-            log.error("Error in UserThread: " + ex.getMessage());
+            log.error("Error in UserThread: {}", ex.getMessage());
             log.error(ex.toString());
         } finally {
             server.removeUser(userName, this);
@@ -83,7 +83,7 @@ public class UserThread extends Thread {
             try {
                 socket.close();
             } catch (IOException e) {
-                log.error("Error in closing socket: " + e.getMessage());
+                log.error("Error in closing socket: {}", e.getMessage());
             }
             String serverMessage = userName + " has quit.";
             log.info(serverMessage);
