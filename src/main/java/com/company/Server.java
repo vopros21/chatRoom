@@ -46,7 +46,7 @@ public class Server {
      */
     public static void main(String[] args) {
         Server server = new Server(3000);
-        System.out.println("Connected to port->" + server.getPort());
+        log.info("Connected to port -> {}", server.getPort());
         server.init();
     }
 
@@ -60,12 +60,7 @@ public class Server {
             while (!stop) {
                 // waits until a client is connected to the server
                 Socket clientSocket = server.accept();
-                System.out.println("Client Connected");
-                System.out.println("Client Info=>");
-                // the remote IP address to which this socket is connected
-                System.out.println(clientSocket.getInetAddress());
-                System.out.println("-----------------------");
-
+                log.info("Client Connected. Client Info => {}", clientSocket.getInetAddress());
                 // separate thread for each client
                 UserThread newUser = new UserThread(clientSocket, this);
                 // add user to the list
