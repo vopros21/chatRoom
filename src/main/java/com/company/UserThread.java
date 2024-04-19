@@ -66,7 +66,7 @@ public class UserThread extends Thread {
             while (socket.isConnected() && !socket.isClosed()) {
                 clientMessage = reader.readLine();
                 serverMessage = "["
-                        + UserNamePainter.getRandomColor(userName)
+                        + UserNamePainter.getUserColor(userName)
                         + userName
                         + UserNamePainter.getPOSTFIX()
                         + "]: " + clientMessage;

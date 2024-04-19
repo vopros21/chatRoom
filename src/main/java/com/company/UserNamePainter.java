@@ -41,7 +41,7 @@ public class UserNamePainter {
     }};
     private static List<String> colorValues;
 
-    public static String getRandomColor(String userName) {
+    public static String getUserColor(String userName) {
         if (colorValues == null) {
             colorValues = new ArrayList<>(COLORS.values());
         }
