@@ -100,7 +100,7 @@ public class Server {
         boolean removed = userNames.remove(userName);
         if (removed) {
             userThreads.remove(aUser);
-            System.out.println("The user " + userName + " quit");
+            log.info("The user {} quit.", userName);
         }
     }
 
