@@ -70,6 +70,9 @@ public class UserThread extends Thread {
                         + userName
                         + UserNamePainter.getPOSTFIX()
                         + "]: " + clientMessage;
+                if (clientMessage == null) {
+                    break;
+                }
                 server.broadcast(serverMessage, this);
                 log.info("Broadcast message: {} -> {}", userName, clientMessage);
             }
