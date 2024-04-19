@@ -6,3 +6,6 @@
  */
 
 rootProject.name = 'chatRoom'
+include 'CLI'
+include 'server'
+
