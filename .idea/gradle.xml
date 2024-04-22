@@ -10,7 +10,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/CLI" />
+            <option value="$PROJECT_DIR$/gui" />
+            <option value="$PROJECT_DIR$/server" />
           </set>
         </option>
       </GradleProjectSettings>
