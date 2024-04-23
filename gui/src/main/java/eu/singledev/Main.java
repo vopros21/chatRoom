@@ -128,6 +128,8 @@ public class Main {
         // Add menu to menu bar
         menuBar.add(menuSettings);
         menuBar.add(menuHelp);
+        menuBar.add(new JSeparator());
+        menuBar.add(new JLabel(String.format("Users online: [%d]", 0)));
         return menuBar;
     }
 
