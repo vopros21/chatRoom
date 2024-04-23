@@ -18,7 +18,7 @@ public class Client {
     private final int port;
     @Setter
     @Getter
-    private String userName;
+    private ChatUser chatUser;
 
     /**
      * Parametrized Constructor
@@ -39,13 +39,23 @@ public class Client {
         if (hostname.isEmpty()) {
             hostname = "localhost";
         }
-        int port = Integer.parseInt(console.readLine("\nEnter port:"));
-        if (port == 0) {
+        int port;
+        try {
+            port = Integer.parseInt(console.readLine("\nEnter port:"));
+        } catch (NumberFormatException e) {
             port = 3000;
         }
 
         Client client = new Client(hostname, port);
         client.init();
+    }
+
+    public String getClientName() {
+        try {
+            return chatUser.getName();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     /**

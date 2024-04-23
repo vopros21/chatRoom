@@ -34,8 +34,8 @@ public class ReadThread extends Thread {
                 System.out.println("\n" + response);
 
                 // prints the username after displaying the server's message
-                if (client.getUserName() != null) {
-                    System.out.print("->(" + client.getUserName() + "): ");
+                if (client.getClientName() != null) {
+                    System.out.print("->(" + client.getClientName() + "): ");
                 }
             } catch (IOException ex) {
                 System.err.println("Error in reading" + ex.getMessage());
