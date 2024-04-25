@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * For making separate thread for each user
@@ -21,7 +23,7 @@ public class UserThread extends Thread {
     // Main Server
     private final Server server;
     private PrintWriter writer;
-    private String userName;
+    private final ChatUser user;
 
     /**
      * Parametrized Constructor
@@ -32,7 +34,7 @@ public class UserThread extends Thread {
     public UserThread(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
-        this.userName = "Anonymous";
+        this.user = new ChatUser(UUID.randomUUID(), "Anonymous", new Date());
     }
 
     /**
@@ -51,44 +53,38 @@ public class UserThread extends Thread {
             printUsers();
 
             // First line given by client is username(See WriteThread.java)
-            this.userName = reader.readLine();
-            server.addUserName(userName);
+            this.user.setName(reader.readLine());
+            server.addUserName(user.getName());
 
             // message send by server to all user, except current one
-            String serverMessage = "New user connected: " + userName;
+            String serverMessage = "New user connected: " + user.getName();
             log.info(serverMessage);
             server.broadcast(serverMessage, this);
 
             // client messages
-            String clientMessage;
 
             // read messages send by current client
             while (socket.isConnected() && !socket.isClosed()) {
-                clientMessage = reader.readLine();
-                serverMessage = "["
-                        + UserNamePainter.getUserColor(userName)
-                        + userName
-                        + UserNamePainter.getPOSTFIX()
-                        + "]: " + clientMessage;
-                if (clientMessage == null) {
+                UserMessage clientMessage = new UserMessage(UUID.randomUUID(), reader.readLine(), user, new Date());
+                if (clientMessage.getMessage() == null) {
                     break;
                 }
-                server.broadcast(serverMessage, this);
-                log.info("Broadcast message: {} -> {}", userName, clientMessage);
+                server.broadcast(clientMessage, this);
+                log.info("Broadcast message: {} -> {}", user.getName(), clientMessage.getMessage());
             }
 
         } catch (IOException ex) {
             log.error("Error in UserThread: {}", ex.getMessage());
             log.error(ex.toString());
         } finally {
-            server.removeUser(userName, this);
+            server.removeUser(user.getName(), this);
 
             try {
                 socket.close();
             } catch (IOException e) {
                 log.error("Error in closing socket: {}", e.getMessage());
             }
-            String serverMessage = userName + " has quit.";
+            String serverMessage = user.getName() + " has quit.";
             log.info(serverMessage);
             server.broadcast(serverMessage, this);
         }

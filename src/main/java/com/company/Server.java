@@ -86,6 +86,19 @@ public class Server {
         }
     }
 
+    void broadcast(UserMessage message, UserThread excludeUser) {
+        for (UserThread aUser : userThreads) {
+            if (aUser != excludeUser) {
+                String userName = message.getUser().getName();
+                aUser.sendMessage("["
+                        + UserNamePainter.getUserColor(userName)
+                        + userName
+                        + UserNamePainter.getPOSTFIX()
+                        + "]: " + message.getMessage());
+            }
+        }
+    }
+
     /**
      * Add username
      */
