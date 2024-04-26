@@ -25,22 +25,23 @@ class ServerTest {
     @Test
     void testNewServerHasNoUsers() {
         server = new Server(3000);
-        assertEquals(0, server.getUserNames().size());
+        assertEquals(0, server.getConnectedUsers().size());
         assertFalse(server.hasUsers());
     }
 
     @Test
     void testAddUser() {
-        server.addUserName("Mike");
-        assertEquals(1, server.getUserNames().size());
+        server.addUser(new ChatUser(null, "Mike", null));
+        assertEquals(1, server.getConnectedUsers().size());
         assertTrue(server.hasUsers());
     }
 
     @Test
     void testRemoveUser() {
-        server.addUserName("Mike");
-        server.removeUser("Mike", null);
-        assertEquals(0, server.getUserNames().size());
+        ChatUser user = new ChatUser(null, "Mike", null);
+        server.addUser(user);
+        server.removeUser(user, null);
+        assertEquals(0, server.getConnectedUsers().size());
         assertFalse(server.hasUsers());
     }
 }

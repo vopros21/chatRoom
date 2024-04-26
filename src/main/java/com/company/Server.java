@@ -25,7 +25,7 @@ public class Server {
     private int port;
     // stores usernames
     @Getter
-    private Set<String> userNames = new HashSet<>();
+    private Set<ChatUser> connectedUsers = new HashSet<>();
     // stores user objects
     private final Set<UserThread> userThreads = new HashSet<>();
 
@@ -102,18 +102,18 @@ public class Server {
     /**
      * Add username
      */
-    void addUserName(String userName) {
-        userNames.add(userName);
+    void addUser(ChatUser user) {
+        connectedUsers.add(user);
     }
 
     /**
      * Remove user
      **/
-    void removeUser(String userName, UserThread aUser) {
-        boolean removed = userNames.remove(userName);
+    void removeUser(ChatUser user, UserThread aUser) {
+        boolean removed = connectedUsers.remove(user);
         if (removed) {
             userThreads.remove(aUser);
-            log.info("The user {} quit.", userName);
+            log.info("The user {} quit.", user);
         }
     }
 
@@ -121,6 +121,6 @@ public class Server {
      * True if the userNames is not empty
      */
     boolean hasUsers() {
-        return !this.userNames.isEmpty();
+        return !this.connectedUsers.isEmpty();
     }
 }

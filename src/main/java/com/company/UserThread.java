@@ -9,7 +9,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * For making separate thread for each user
@@ -54,7 +56,7 @@ public class UserThread extends Thread {
 
             // First line given by client is username(See WriteThread.java)
             this.user.setName(reader.readLine());
-            server.addUserName(user.getName());
+            server.addUser(user);
 
             // message send by server to all user, except current one
             String serverMessage = "New user connected: " + user.getName();
@@ -77,7 +79,7 @@ public class UserThread extends Thread {
             log.error("Error in UserThread: {}", ex.getMessage());
             log.error(ex.toString());
         } finally {
-            server.removeUser(user.getName(), this);
+            server.removeUser(user, this);
 
             try {
                 socket.close();
@@ -95,10 +97,14 @@ public class UserThread extends Thread {
      */
     void printUsers() {
         if (server.hasUsers()) {
-            writer.println("Connected users: " + server.getUserNames());
+            writer.println("Connected users: " + getConnectedUsers());
         } else {
             writer.println("No other users connected");
         }
+    }
+
+    private List<String> getConnectedUsers() {
+        return server.getConnectedUsers().stream().map(ChatUser::getName).collect(Collectors.toList());
     }
 
     /**
