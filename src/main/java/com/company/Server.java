@@ -17,17 +17,13 @@ public class Server {
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     // stop the server
     public boolean stop;
-    /**
-     * -- GETTER --
-     * get the port number
-     */
     @Getter
     private int port;
-    // stores usernames
-    @Getter
-    private Set<ChatUser> connectedUsers = new HashSet<>();
-    // stores user objects
+    // stores user threads
     private final Set<UserThread> userThreads = new HashSet<>();
+    @Getter
+    // stores user objects
+    private Set<ChatUser> connectedUsers = new HashSet<>();
 
     /**
      * Parametrized Constructor
@@ -56,21 +52,23 @@ public class Server {
     public void init() {
         // ServerSocket class is auto closable
         try (ServerSocket server = new ServerSocket(port)) {
-
             while (!stop) {
                 // waits until a client is connected to the server
                 Socket clientSocket = server.accept();
-                log.info("Client Connected. Client Info => {}", clientSocket.getInetAddress());
                 // separate thread for each client
                 UserThread newUser = new UserThread(clientSocket, this);
                 // add user to the list
                 userThreads.add(newUser);
+                log.info("Client Connected. Client Info => socket: {}:{}, name: {}",
+                        clientSocket.getInetAddress(),
+                        clientSocket.getPort(),
+                        newUser.getUser().getName());
                 // start the thread
                 newUser.start();
             }
 
         } catch (IOException e) {
-            log.warn("Port already in use");
+            log.error("Port already in use");
             log.error(e.toString());
         }
     }
@@ -113,7 +111,14 @@ public class Server {
         boolean removed = connectedUsers.remove(user);
         if (removed) {
             userThreads.remove(aUser);
-            log.info("The user {} quit.", user);
+            log.info("Service message: User '{}' has quit.", user.getName());
+            stopIfNoActiveConnections();
+        }
+    }
+
+    private void stopIfNoActiveConnections() {
+        if (connectedUsers.isEmpty() && userThreads.isEmpty()) {
+            stop = true;
         }
     }
 

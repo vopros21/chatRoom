@@ -1,5 +1,6 @@
 package com.company;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ public class UserThread extends Thread {
     // Main Server
     private final Server server;
     private PrintWriter writer;
+    @Getter
     private final ChatUser user;
 
     /**
@@ -87,7 +89,6 @@ public class UserThread extends Thread {
                 log.error("Error in closing socket: {}", e.getMessage());
             }
             String serverMessage = user.getName() + " has quit.";
-            log.info(serverMessage);
             server.broadcast(serverMessage, this);
         }
     }
