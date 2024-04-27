@@ -1,4 +1,4 @@
-package com.company;
+package com.company.server;
 
 import java.io.Console;
 import java.io.IOException;
