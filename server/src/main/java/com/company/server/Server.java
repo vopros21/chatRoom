@@ -1,4 +1,4 @@
-package com.company;
+package com.company.server;
 
 import lombok.Getter;
 import org.slf4j.Logger;

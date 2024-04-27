@@ -1,4 +1,4 @@
-package com.company;
+package com.company.server;
 
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

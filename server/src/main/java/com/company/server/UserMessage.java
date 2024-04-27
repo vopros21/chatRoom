@@ -1,4 +1,4 @@
-package com.company;
+package com.company.server;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
