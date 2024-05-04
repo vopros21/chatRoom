@@ -5,20 +5,21 @@ import lombok.Setter;
 
 import java.io.Console;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
  * Main Class for Client Side
  */
+@Getter
 public class Client {
     // ex-> localhost
     private final String hostname;
     private final int port;
     @Setter
-    @Getter
     private ChatUser chatUser;
+    private ReadThread readThread;
+    private WriteThread writeThread;
 
     /**
      * Parametrized Constructor
@@ -63,16 +64,16 @@ public class Client {
      */
     public void init() {
         try {
-            // gives the IP address of the host
-            InetAddress address = InetAddress.getByName(hostname);
-            // socket constructor of type (InetAddress, port number)
-            Socket socket = new Socket(address, port);
+            // socket constructor of type (hostname, port number)
+            Socket socket = new Socket(hostname, port);
 
             System.out.println("Connected to the chat server");
 
             // separate threads for reading and writing messages
-            new ReadThread(socket, this).start();
-            new WriteThread(socket, this).start();
+            readThread = new ReadThread(socket, this);
+            writeThread = new WriteThread(socket, this);
+            readThread.start();
+            writeThread.start();
 
         } catch (UnknownHostException ex) {
             System.err.println("Server not found: " + ex.getMessage());
