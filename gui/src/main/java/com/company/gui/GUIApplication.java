@@ -62,13 +62,32 @@ public class GUIApplication extends JFrame {
         add(lowerPane, BorderLayout.SOUTH);
 
         try {
-//            this.client = new Client("localhost", 3000, this::onMessageReceived);
             this.client = new ChatClient(hostname, serverPort, this::onMessageReceived);
             client.startClient();
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
+            // Show input dialog to get hostname
+            String inputHostname = JOptionPane.showInputDialog(this, "Enter hostname:", "Connection Failed", JOptionPane.QUESTION_MESSAGE);
+            // Show input dialog to get port
+            String inputPort = JOptionPane.showInputDialog(this, "Enter port:", "Connection Failed", JOptionPane.QUESTION_MESSAGE);
+            if (inputHostname != null && !inputHostname.isEmpty() && inputPort != null && !inputPort.isEmpty()) {
+                try {
+                    // Parse the port number
+                    int port = Integer.parseInt(inputPort);
+                    // Try to connect with the new hostname and port
+                    this.client = new ChatClient(inputHostname, port, this::onMessageReceived);
+                    client.startClient();
+                    // Update the connectedTo label
+                    connectedTo.setText("Connected to: %s:%d".formatted(inputHostname, port));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error: Invalid hostname or port", "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
         }
     }
 
