@@ -1,8 +1,10 @@
 package com.company.server;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,12 +15,14 @@ import java.util.Set;
 /**
  * Main class for running the server
  */
+@Component
+@RequiredArgsConstructor
 public class Server {
     private static final Logger log = LoggerFactory.getLogger(Server.class);
     // stop the server
     public boolean stop;
     @Getter
-    private int port;
+    private int port = 3000;
     // stores user threads
     private final Set<UserThread> userThreads = new HashSet<>();
     @Getter
@@ -30,21 +34,21 @@ public class Server {
      *
      * @param port: port number to run the server on
      */
-    public Server(int port) {
-        this.port = port;
-        this.stop = false;
-    }
+//    public Server(int port) {
+//        this.port = port;
+//        this.stop = false;
+//    }
 
     /**
      * Main Method
      *
      * @param args: command line arguments
      */
-    public static void main(String[] args) {
-        Server server = new Server(3000);
-        log.info("Connected to port -> {}", server.getPort());
-        server.init();
-    }
+//    public static void main(String[] args) {
+//        Server server = new Server();
+//        log.info("Connected to port -> {}", server.getPort());
+//        server.init();
+//    }
 
     /**
      * Initializing the server

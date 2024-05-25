@@ -13,7 +13,7 @@ class ServerTest {
 
     @BeforeEach
     void setUp() {
-        server = new Server(3000);
+        server = new Server();
     }
 
     @Test
