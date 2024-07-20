@@ -37,12 +37,13 @@ public class GUIApplication extends JFrame {
         lowerPane.setBorder(BorderFactory.createMatteBorder(4, 4, 4, 4, new Color(0, 0, 0, 0)));
 
         textField = new HintTextField("Type the message here...");
-        textField.addActionListener(e -> textField.setText(""));
+        textField.addActionListener(e -> sendTextMessage());
         lowerPane.add(textField, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
 
         sendButton = new JButton("Send");
+        sendButton.addActionListener(e -> sendTextMessage());
         buttonPanel.add(sendButton, BorderLayout.WEST);
 
         exitButton = new JButton("Exit");
@@ -70,6 +71,13 @@ public class GUIApplication extends JFrame {
             JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
+    }
+
+    private void sendTextMessage() {
+        String message = textField.getText();
+        client.sendMessage(message);
+        textField.setText("");
+        messageArea.append("You: " + message + "\n");
     }
 
     private void onMessageReceived(String message) {
