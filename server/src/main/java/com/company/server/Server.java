@@ -89,9 +89,7 @@ public class Server {
             if (aUser != excludeUser) {
                 String userName = message.getUser().getName();
                 aUser.sendMessage("["
-                        + UserNamePainter.getUserColor(userName)
                         + userName
-                        + UserNamePainter.getPOSTFIX()
                         + "]: " + message.getMessage());
             }
         }

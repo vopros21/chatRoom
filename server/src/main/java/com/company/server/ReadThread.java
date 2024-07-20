@@ -31,6 +31,11 @@ public class ReadThread extends Thread {
         while (!socket.isInputShutdown()) {
             try {
                 String response = reader.readLine();
+                if (response.startsWith("[")) {
+                    String userName = response.split(":")[0].substring(1, response.split(":")[0].length() - 1);
+                    String coloredUserName = UserNamePainter.getUserColor(userName) + userName + UserNamePainter.getPOSTFIX();
+                    response = response.replaceFirst(userName, coloredUserName);
+                }
                 System.out.println("\n" + response);
 
                 // prints the username after displaying the server's message
