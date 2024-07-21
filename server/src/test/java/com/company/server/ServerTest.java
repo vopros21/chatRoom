@@ -1,6 +1,6 @@
 package com.company.server;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ServerTest {
     private static Server server;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         server = new Server(3000);
     }
 
@@ -23,8 +23,7 @@ class ServerTest {
     }
 
     @Test
-    void testNewServerHasNoUsers() {
-        server = new Server(3000);
+    void testNewServerHasNoUsersWithinStartup() {
         assertEquals(0, server.getConnectedUsers().size());
         assertFalse(server.hasUsers());
     }
@@ -34,6 +33,8 @@ class ServerTest {
         server.addUser(new ChatUser(null, "Mike", null));
         assertEquals(1, server.getConnectedUsers().size());
         assertTrue(server.hasUsers());
+        server.addUser(new ChatUser(null, "Mike", null));
+        assertEquals(1, server.getConnectedUsers().size(), "User already exists");
     }
 
     @Test

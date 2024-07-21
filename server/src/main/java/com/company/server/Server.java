@@ -99,6 +99,12 @@ public class Server {
      * Add username
      */
     void addUser(ChatUser user) {
+        for (ChatUser chatUser : connectedUsers) {
+            if (chatUser.getName().equals(user.getName())) {
+                //TODO: send message to the user that the name is already taken
+                return;
+            }
+        }
         connectedUsers.add(user);
     }
 
