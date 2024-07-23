@@ -90,6 +90,8 @@ public class GUIApplication extends JFrame {
                 System.exit(1);
             }
         }
+        String username = JOptionPane.showInputDialog(this, "Enter your username:", "Username", JOptionPane.QUESTION_MESSAGE);
+        client.sendMessage(username);
     }
 
     private void sendTextMessage() {
