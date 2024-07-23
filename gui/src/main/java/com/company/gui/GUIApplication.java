@@ -1,11 +1,15 @@
 package com.company.gui;
 
 import com.company.gui.utils.HintTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class GUIApplication extends JFrame {
+    private static final Logger log = LoggerFactory.getLogger(GUIApplication.class);
+
     private JTextArea messageArea;
     private JTextField textField;
     private JButton sendButton;
@@ -65,8 +69,9 @@ public class GUIApplication extends JFrame {
         try {
             this.client = new ChatClient(hostname, serverPort, this::onMessageReceived);
             client.startClient();
+            log.info("Connected to: {}:{}", hostname, serverPort);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error: {}", e.getMessage());
             // Show input dialog to get hostname
             String inputHostname = JOptionPane.showInputDialog(this, "Enter hostname:", "Connection Failed", JOptionPane.QUESTION_MESSAGE);
             // Show input dialog to get port
@@ -81,7 +86,7 @@ public class GUIApplication extends JFrame {
                     // Update the connectedTo label
                     connectedTo.setText("Connected to: %s:%d".formatted(inputHostname, port));
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    log.error("Error: {}", ex.getMessage());
                     JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     System.exit(1);
                 }
@@ -99,6 +104,7 @@ public class GUIApplication extends JFrame {
         client.sendMessage(message);
         textField.setText("");
         messageArea.append("You: " + message + "\n");
+        log.info("Message sent: {}", message);
     }
 
     private void onMessageReceived(String message) {
