@@ -44,11 +44,11 @@ public class Server {
      *
      * @param args: command line arguments
      */
-//    public static void main(String[] args) {
-//        Server server = new Server();
-//        log.info("Connected to port -> {}", server.getPort());
-//        server.init();
-//    }
+    public static void main(String[] args) {
+        Server server = new Server();
+        log.info("Connected to port -> {}", server.getPort());
+        server.init();
+    }
 
     /**
      * Initializing the server
