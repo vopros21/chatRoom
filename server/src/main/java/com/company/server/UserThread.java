@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author Mike Kostenko on 31/03/2024
  */
 public class UserThread extends Thread {
-    private static final Logger log = LoggerFactory.getLogger(Server.class);
+    private static final Logger log = LoggerFactory.getLogger(UserThread.class);
     // User Socket
     private final Socket socket;
     // Main Server
@@ -38,7 +38,7 @@ public class UserThread extends Thread {
     public UserThread(Socket socket, Server server) {
         this.socket = socket;
         this.server = server;
-        this.user = new ChatUser(UUID.randomUUID(), "Anonymous", new Date());
+        this.user = new ChatUser(UUID.randomUUID(), "Anonymous", Instant.now());
     }
 
     /**
@@ -69,7 +69,7 @@ public class UserThread extends Thread {
 
             // read messages send by current client
             while (socket.isConnected() && !socket.isClosed()) {
-                UserMessage clientMessage = new UserMessage(UUID.randomUUID(), reader.readLine(), user, new Date());
+                UserMessage clientMessage = new UserMessage(UUID.randomUUID(), reader.readLine(), user, Instant.now());
                 if (clientMessage.getMessage() == null) {
                     break;
                 }

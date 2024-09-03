@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -16,5 +16,5 @@ import java.util.UUID;
 public class ChatUser {
     private UUID id;
     private String name;
-    private Date lastVisit;
+    private Instant lastVisit;
 }

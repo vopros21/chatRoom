@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -34,7 +34,7 @@ public class WriteThread extends Thread {
 
         // First Input is Name
         String userName = console.readLine("\nEnter your name: ");
-        client.setChatUser(new ChatUser(UUID.randomUUID(), userName, new Date()));
+        client.setChatUser(new ChatUser(UUID.randomUUID(), userName, Instant.now()));
         writer.println(client.getChatUser().getName());
 
         String text;

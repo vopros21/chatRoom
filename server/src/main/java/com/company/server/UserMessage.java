@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -19,5 +19,5 @@ public class UserMessage {
     private UUID id;
     private String message;
     private ChatUser user;
-    private Date time;
+    private Instant time;
 }
