@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +31,8 @@ public class Server {
     @Getter
     // stores user objects
     private Set<ChatUser> connectedUsers = new HashSet<>();
+
+    private static Connection conn;
 
     /**
      * Parametrized Constructor
@@ -56,6 +61,8 @@ public class Server {
     public void init() {
         // ServerSocket class is auto closable
         try (ServerSocket server = new ServerSocket(port)) {
+            String dbUrl = "jdbc:sqlite:/Users/mkostenko/IdeaProjects/chatRoom/server/src/main/resources/testDB.db";
+            conn = DriverManager.getConnection(dbUrl);
             while (!stop) {
                 // waits until a client is connected to the server
                 Socket clientSocket = server.accept();
@@ -73,6 +80,9 @@ public class Server {
 
         } catch (IOException e) {
             log.error("Port already in use");
+            log.error(e.toString());
+        } catch (SQLException e) {
+            log.error("Error in connecting to the database");
             log.error(e.toString());
         }
     }
