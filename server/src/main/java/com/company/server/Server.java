@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.temporal.ChronoField;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,8 +62,10 @@ public class Server {
     public void init() {
         // ServerSocket class is auto closable
         try (ServerSocket server = new ServerSocket(port)) {
-            String dbUrl = "jdbc:sqlite:/Users/mkostenko/IdeaProjects/chatRoom/server/src/main/resources/testDB.db";
+            String dbUrl = System.getenv("dbUrl");
             conn = DriverManager.getConnection(dbUrl);
+            log.info("Connected to the database: {}", conn.getMetaData().getURL());
+            createTablesIfNotExist();
             while (!stop) {
                 // waits until a client is connected to the server
                 Socket clientSocket = server.accept();
@@ -105,6 +108,8 @@ public class Server {
                 aUser.sendMessage("["
                         + userName
                         + "]: " + message.getMessage());
+            } else {
+                logMessage(message);
             }
         }
     }
@@ -145,5 +150,55 @@ public class Server {
      */
     boolean hasUsers() {
         return !this.connectedUsers.isEmpty();
+    }
+
+    private void createTablesIfNotExist() {
+        String messagesTableSql = """
+                CREATE TABLE IF NOT EXISTS messages (
+                id text PRIMARY KEY,
+                message text NOT NULL,
+                userId text NOT NULL,
+                time integer NOT NULL
+                );""";
+        String usersTableSql = """
+                CREATE TABLE IF NOT EXISTS users (
+                id text PRIMARY KEY,
+                name text NOT NULL,
+                lastVisited integer NOT NULL
+                );""";
+        try (var stmt = conn.createStatement()) {
+            stmt.execute(messagesTableSql);
+            stmt.execute(usersTableSql);
+        } catch (SQLException e) {
+            log.error("Error in creating the table");
+            log.error(e.toString());
+        }
+    }
+
+    public void logMessage(UserMessage message) {
+        String sql = "INSERT INTO messages (id, message, userId, time) VALUES (?, ?, ?, ?)";
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, message.getId().toString());
+            pstmt.setString(2, message.getMessage());
+            pstmt.setString(3, message.getUser().getId().toString());
+            pstmt.setLong(4, message.getTime().getLong(ChronoField.INSTANT_SECONDS));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error("Error in logging the message");
+            log.error(e.toString());
+        }
+    }
+
+    public void saveUser(ChatUser user) {
+        String sql = "INSERT INTO users (id, name, lastVisited) VALUES (?, ?, ?)";
+        try (var pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, user.getId().toString());
+            pstmt.setString(2, user.getName());
+            pstmt.setLong(3, user.getLastVisit().getLong(ChronoField.INSTANT_SECONDS));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            log.error("Error in saving the user");
+            log.error(e.toString());
+        }
     }
 }
