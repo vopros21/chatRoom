@@ -39,6 +39,7 @@ public class UserThread extends Thread {
         this.socket = socket;
         this.server = server;
         this.user = new ChatUser(UUID.randomUUID(), "Anonymous", Instant.now());
+        server.saveUser(user);
     }
 
     /**
